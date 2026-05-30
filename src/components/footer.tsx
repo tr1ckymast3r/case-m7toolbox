@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CreditCard, Github, Twitter } from "lucide-react";
+import { CreditCard, ExternalLink, Globe } from "lucide-react";
 
 export function Footer() {
   return (
@@ -55,10 +55,10 @@ export function Footer() {
           </p>
           <div className="flex items-center gap-4">
             <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
-              <Github className="h-5 w-5" />
+              <Globe className="h-5 w-5" />
             </a>
             <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
-              <Twitter className="h-5 w-5" />
+              <ExternalLink className="h-5 w-5" />
             </a>
           </div>
         </div>
