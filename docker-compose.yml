@@ -5,6 +5,12 @@ services:
       - "3007:3000"
     restart: unless-stopped
     environment:
-      - NEXTAUTH_SECRET=m7toolbox-super-secret-key-change-in-production-2024
-      - NEXTAUTH_URL=http://localhost:3007
-      - DATABASE_URL=file:./prisma/dev.db
+      - NEXTAUTH_SECRET=m7toolbox-r3d-secret-key-2026
+      - NEXTAUTH_URL=http://100.87.34.74:3007
+      - AUTH_TRUST_HOST=true
+      - DATABASE_URL=file:/app/data/dev.db
+    volumes:
+      - m7toolbox-data:/app/data
+
+volumes:
+  m7toolbox-data:
