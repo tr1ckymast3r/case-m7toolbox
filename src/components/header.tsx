@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { useTheme } from "next-themes";
-import { Moon, Sun, Menu, X, CreditCard, Search, Shield, Layers, User, LogIn } from "lucide-react";
+import { useSession, signOut } from "next-auth/react";
+import { Moon, Sun, Menu, X, CreditCard, Search, Shield, Layers, User, LogIn, LogOut, LayoutDashboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 
@@ -14,6 +15,7 @@ const navItems = [
 
 export function Header() {
   const { theme, setTheme } = useTheme();
+  const { data: session, status } = useSession();
   const [mounted, setMounted] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -63,18 +65,48 @@ export function Header() {
               </Button>
             )}
 
-            <Link href="/auth/login">
-              <Button variant="ghost" size="sm" className="hidden sm:flex gap-2">
-                <LogIn className="h-4 w-4" />
-                Login
-              </Button>
-            </Link>
+            {status === "loading" && (
+              <div className="h-9 w-20 bg-muted animate-pulse rounded-md hidden sm:block" />
+            )}
 
-            <Link href="/auth/register">
-              <Button size="sm" className="hidden sm:flex">
-                Get Started
-              </Button>
-            </Link>
+            {status === "authenticated" && session?.user ? (
+              <>
+                <Link href="/dashboard">
+                  <Button variant="ghost" size="sm" className="hidden sm:flex gap-2">
+                    <LayoutDashboard className="h-4 w-4" />
+                    Dashboard
+                  </Button>
+                </Link>
+                <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-muted/50 rounded-lg">
+                  <User className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-sm font-medium">{session.user.name || session.user.email}</span>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="hidden sm:flex gap-2"
+                  onClick={() => signOut({ callbackUrl: "/" })}
+                >
+                  <LogOut className="h-4 w-4" />
+                  Logout
+                </Button>
+              </>
+            ) : status === "unauthenticated" ? (
+              <>
+                <Link href="/auth/login">
+                  <Button variant="ghost" size="sm" className="hidden sm:flex gap-2">
+                    <LogIn className="h-4 w-4" />
+                    Login
+                  </Button>
+                </Link>
+
+                <Link href="/auth/register">
+                  <Button size="sm" className="hidden sm:flex">
+                    Get Started
+                  </Button>
+                </Link>
+              </>
+            ) : null}
 
             {/* Mobile menu button */}
             <Button
@@ -105,12 +137,34 @@ export function Header() {
               </Link>
             ))}
             <div className="pt-2 border-t border-border flex gap-2">
-              <Link href="/auth/login" className="flex-1">
-                <Button variant="outline" className="w-full" size="sm">Login</Button>
-              </Link>
-              <Link href="/auth/register" className="flex-1">
-                <Button className="w-full" size="sm">Get Started</Button>
-              </Link>
+              {status === "authenticated" && session?.user ? (
+                <>
+                  <Link href="/dashboard" className="flex-1">
+                    <Button variant="outline" className="w-full" size="sm" onClick={() => setMobileOpen(false)}>
+                      Dashboard
+                    </Button>
+                  </Link>
+                  <Button
+                    className="flex-1"
+                    size="sm"
+                    onClick={() => {
+                      setMobileOpen(false);
+                      signOut({ callbackUrl: "/" });
+                    }}
+                  >
+                    Logout
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Link href="/auth/login" className="flex-1">
+                    <Button variant="outline" className="w-full" size="sm" onClick={() => setMobileOpen(false)}>Login</Button>
+                  </Link>
+                  <Link href="/auth/register" className="flex-1">
+                    <Button className="w-full" size="sm" onClick={() => setMobileOpen(false)}>Get Started</Button>
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </div>
